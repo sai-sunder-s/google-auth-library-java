@@ -37,7 +37,6 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.json.JsonObjectParser;
-import com.google.auth.http.HttpTransportFactory;
 import com.google.auth.oauth2.IdentityPoolCredentials.IdentityPoolCredentialSource.CredentialFormatType;
 import com.google.common.io.CharStreams;
 import java.io.BufferedReader;
@@ -53,6 +52,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import javax.annotation.Nullable;
 
@@ -133,18 +133,21 @@ public class IdentityPoolCredentials extends ExternalAccountCredentials {
       Map<String, String> formatMap = (Map<String, String>) credentialSourceMap.get("format");
       if (formatMap != null && formatMap.containsKey("type")) {
         String type = formatMap.get("type");
-        if (!"text".equals(type) && !"json".equals(type)) {
+
+        if (type != null && "json".equals(type.toLowerCase(Locale.US))) {
+          // For JSON, the subject_token field name must be provided.
+          if (!formatMap.containsKey("subject_token_field_name")) {
+            throw new IllegalArgumentException(
+                "When specifying a JSON credential type, the subject_token_field_name must be set.");
+          }
+          credentialFormatType = CredentialFormatType.JSON;
+          subjectTokenFieldName = formatMap.get("subject_token_field_name");
+        } else if (type != null && "text".equals(type.toLowerCase(Locale.US))) {
+          credentialFormatType = CredentialFormatType.TEXT;
+        } else {
           throw new IllegalArgumentException(
               String.format("Invalid credential source format type: %s.", type));
         }
-        credentialFormatType =
-            type.equals("text") ? CredentialFormatType.TEXT : CredentialFormatType.JSON;
-
-        if (!formatMap.containsKey("subject_token_field_name")) {
-          throw new IllegalArgumentException(
-              "When specifying a JSON credential type, the subject_token_field_name must be set.");
-        }
-        subjectTokenFieldName = formatMap.get("subject_token_field_name");
       }
     }
 
@@ -155,39 +158,10 @@ public class IdentityPoolCredentials extends ExternalAccountCredentials {
 
   private final IdentityPoolCredentialSource identityPoolCredentialSource;
 
-  /**
-   * Internal constructor. See {@link
-   * ExternalAccountCredentials#ExternalAccountCredentials(HttpTransportFactory, String, String,
-   * String, CredentialSource, String, String, String, String, String, Collection,
-   * EnvironmentProvider)}
-   */
-  IdentityPoolCredentials(
-      HttpTransportFactory transportFactory,
-      String audience,
-      String subjectTokenType,
-      String tokenUrl,
-      IdentityPoolCredentialSource credentialSource,
-      @Nullable String tokenInfoUrl,
-      @Nullable String serviceAccountImpersonationUrl,
-      @Nullable String quotaProjectId,
-      @Nullable String clientId,
-      @Nullable String clientSecret,
-      @Nullable Collection<String> scopes,
-      @Nullable EnvironmentProvider environmentProvider) {
-    super(
-        transportFactory,
-        audience,
-        subjectTokenType,
-        tokenUrl,
-        credentialSource,
-        tokenInfoUrl,
-        serviceAccountImpersonationUrl,
-        quotaProjectId,
-        clientId,
-        clientSecret,
-        scopes,
-        environmentProvider);
-    this.identityPoolCredentialSource = credentialSource;
+  /** Internal constructor. See {@link Builder}. */
+  IdentityPoolCredentials(Builder builder) {
+    super(builder);
+    this.identityPoolCredentialSource = (IdentityPoolCredentialSource) builder.credentialSource;
   }
 
   @Override
@@ -273,18 +247,7 @@ public class IdentityPoolCredentials extends ExternalAccountCredentials {
   @Override
   public IdentityPoolCredentials createScoped(Collection<String> newScopes) {
     return new IdentityPoolCredentials(
-        transportFactory,
-        getAudience(),
-        getSubjectTokenType(),
-        getTokenUrl(),
-        identityPoolCredentialSource,
-        getTokenInfoUrl(),
-        getServiceAccountImpersonationUrl(),
-        getQuotaProjectId(),
-        getClientId(),
-        getClientSecret(),
-        newScopes,
-        getEnvironmentProvider());
+        (IdentityPoolCredentials.Builder) newBuilder(this).setScopes(newScopes));
   }
 
   public static Builder newBuilder() {
@@ -303,21 +266,14 @@ public class IdentityPoolCredentials extends ExternalAccountCredentials {
       super(credentials);
     }
 
+    public Builder setWorkforcePoolUserProject(String workforcePoolUserProject) {
+      super.setWorkforcePoolUserProject(workforcePoolUserProject);
+      return this;
+    }
+
     @Override
     public IdentityPoolCredentials build() {
-      return new IdentityPoolCredentials(
-          transportFactory,
-          audience,
-          subjectTokenType,
-          tokenUrl,
-          (IdentityPoolCredentialSource) credentialSource,
-          tokenInfoUrl,
-          serviceAccountImpersonationUrl,
-          quotaProjectId,
-          clientId,
-          clientSecret,
-          scopes,
-          environmentProvider);
+      return new IdentityPoolCredentials(this);
     }
   }
 }

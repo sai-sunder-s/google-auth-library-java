@@ -31,9 +31,9 @@
 
 package com.google.auth.oauth2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.api.client.http.LowLevelHttpRequest;
 import com.google.api.client.http.LowLevelHttpResponse;
@@ -68,7 +68,7 @@ public class MockExternalAccountCredentialsTransport extends MockHttpTransport {
   private static final String AWS_CREDENTIALS_URL = "https://www.aws-credentials.com";
   private static final String AWS_REGION_URL = "https://www.aws-region.com";
   private static final String METADATA_SERVER_URL = "https://www.metadata.google.com";
-  private static final String STS_URL = "https://www.sts.google.com";
+  private static final String STS_URL = "https://sts.googleapis.com";
 
   private static final String SUBJECT_TOKEN = "subjectToken";
   private static final String TOKEN_TYPE = "Bearer";
@@ -89,6 +89,7 @@ public class MockExternalAccountCredentialsTransport extends MockHttpTransport {
   private MockLowLevelHttpRequest request;
   private String expireTime;
   private String metadataServerContentType;
+  private String stsContent;
 
   public void addResponseErrorSequence(IOException... errors) {
     Collections.addAll(responseErrorSequence, errors);
@@ -160,6 +161,10 @@ public class MockExternalAccountCredentialsTransport extends MockHttpTransport {
             }
             if (STS_URL.equals(url)) {
               Map<String, String> query = TestUtils.parseQuery(getContentAsString());
+
+              // Store STS content as multiple calls are made using this transport.
+              stsContent = getContentAsString();
+
               assertEquals(EXPECTED_GRANT_TYPE, query.get("grant_type"));
               assertNotNull(query.get("subject_token_type"));
               assertNotNull(query.get("subject_token"));
@@ -204,6 +209,10 @@ public class MockExternalAccountCredentialsTransport extends MockHttpTransport {
           }
         };
     return this.request;
+  }
+
+  public String getStsContent() {
+    return stsContent;
   }
 
   public MockLowLevelHttpRequest getRequest() {

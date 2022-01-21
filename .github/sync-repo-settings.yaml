@@ -2,15 +2,13 @@ rebaseMergeAllowed: true
 squashMergeAllowed: true
 mergeCommitAllowed: false
 branchProtectionRules:
-  - pattern: master
+  - pattern: main
     isAdminEnforced: true
     requiredStatusCheckContexts:
       - dependencies (8)
       - dependencies (11)
-      - linkage-monitor
       - lint
       - clirr
-      - units (7)
       - units (8)
       - units (11)
       - cla/google
@@ -22,10 +20,35 @@ branchProtectionRules:
     requiredStatusCheckContexts:
       - dependencies (8)
       - dependencies (11)
-      - linkage-monitor
       - lint
       - clirr
       - units (7)
+      - units (8)
+      - units (11)
+      - cla/google
+    requiredApprovingReviewCount: 1
+    requiresCodeOwnerReviews: true
+    requiresStrictStatusChecks: true
+  - pattern: java7
+    isAdminEnforced: true
+    requiredStatusCheckContexts:
+      - dependencies (8)
+      - dependencies (11)
+      - lint
+      - clirr
+      - units (8)
+      - units (11)
+      - cla/google
+    requiredApprovingReviewCount: 1
+    requiresCodeOwnerReviews: true
+    requiresStrictStatusChecks: true
+  - pattern: 1.2.x
+    isAdminEnforced: true
+    requiredStatusCheckContexts:
+      - dependencies (8)
+      - dependencies (11)
+      - lint
+      - clirr
       - units (8)
       - units (11)
       - cla/google

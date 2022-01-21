@@ -1,5 +1,105 @@
 # Changelog
 
+## [1.4.0](https://github.com/googleapis/google-auth-library-java/compare/v1.3.0...v1.4.0) (2022-01-19)
+
+
+### Features
+
+* setting the audience to always point to google token endpoint ([#833](https://github.com/googleapis/google-auth-library-java/issues/833)) ([33bfe7a](https://github.com/googleapis/google-auth-library-java/commit/33bfe7a788a524324cd9b0a54acc8917f6b75556))
+
+
+### Bug Fixes
+
+* (WIF) remove erroneous check for the subject token field name for text credential source ([#822](https://github.com/googleapis/google-auth-library-java/issues/822)) ([6d35c68](https://github.com/googleapis/google-auth-library-java/commit/6d35c681cf397ff2a90363184e26ee5850294c41))
+* **java:** add -ntp flag to native image testing command ([#1299](https://github.com/googleapis/google-auth-library-java/issues/1299)) ([#807](https://github.com/googleapis/google-auth-library-java/issues/807)) ([aa6654a](https://github.com/googleapis/google-auth-library-java/commit/aa6654a639ea15bcce7c7a6e86f170b1345895f0))
+* **java:** run Maven in plain console-friendly mode ([#1301](https://github.com/googleapis/google-auth-library-java/issues/1301)) ([#818](https://github.com/googleapis/google-auth-library-java/issues/818)) ([4df45d0](https://github.com/googleapis/google-auth-library-java/commit/4df45d0d03a973f1beff43d8965c26289f217f22))
+
+## [1.3.0](https://www.github.com/googleapis/google-auth-library-java/compare/v1.2.2...v1.3.0) (2021-11-10)
+
+
+### Features
+
+* next release from main branch is 1.3.0 ([#780](https://www.github.com/googleapis/google-auth-library-java/issues/780)) ([1149581](https://www.github.com/googleapis/google-auth-library-java/commit/1149581e63267e3553c74ba2114d849c5b24f27b))
+
+
+### Bug Fixes
+
+* **java:** java 17 dependency arguments ([#1266](https://www.github.com/googleapis/google-auth-library-java/issues/1266)) ([#779](https://www.github.com/googleapis/google-auth-library-java/issues/779)) ([9160a53](https://www.github.com/googleapis/google-auth-library-java/commit/9160a53e6507c1c938795e181c65ad80db1bcf11))
+* service account impersonation with workforce credentials ([#770](https://www.github.com/googleapis/google-auth-library-java/issues/770)) ([6449ef0](https://www.github.com/googleapis/google-auth-library-java/commit/6449ef0922053121a6732933ab9e246965fde3b7))
+
+### [1.2.2](https://www.github.com/googleapis/google-auth-library-java/compare/v1.2.1...v1.2.2) (2021-10-20)
+
+
+### Bug Fixes
+
+* environment variable is "AWS_SESSION_TOKEN" and not "Token" ([#772](https://www.github.com/googleapis/google-auth-library-java/issues/772)) ([c8c3073](https://www.github.com/googleapis/google-auth-library-java/commit/c8c3073790ca2f660eabd2c410b0e295f693040b))
+
+### [1.2.1](https://www.github.com/googleapis/google-auth-library-java/compare/v1.2.0...v1.2.1) (2021-10-11)
+
+
+### Bug Fixes
+
+* disabling self-signed jwt for domain wide delegation ([#754](https://www.github.com/googleapis/google-auth-library-java/issues/754)) ([ac70a27](https://www.github.com/googleapis/google-auth-library-java/commit/ac70a279bdaf681507d7815264a3f5e92fd2aaa6))
+
+## [1.2.0](https://www.github.com/googleapis/google-auth-library-java/compare/v1.1.0...v1.2.0) (2021-09-30)
+
+
+### Features
+
+* add support for Workforce Pools ([#729](https://www.github.com/googleapis/google-auth-library-java/issues/729)) ([5f3fed7](https://www.github.com/googleapis/google-auth-library-java/commit/5f3fed79e22f3c2d585c5b03c01791b0f8109929))
+
+
+### Bug Fixes
+
+* allow empty workforce_pool_user_project ([#752](https://www.github.com/googleapis/google-auth-library-java/issues/752)) ([e1cbce1](https://www.github.com/googleapis/google-auth-library-java/commit/e1cbce1a5cb269c6613bc6d40f06145bd45099c0))
+* timing of stale token refreshes on ComputeEngine ([#749](https://www.github.com/googleapis/google-auth-library-java/issues/749)) ([c813d55](https://www.github.com/googleapis/google-auth-library-java/commit/c813d55a78053ecbec1a9640e6c9814da87319eb))
+* workforce audience ([#741](https://www.github.com/googleapis/google-auth-library-java/issues/741)) ([a08cacc](https://www.github.com/googleapis/google-auth-library-java/commit/a08cacc7990b9058c8f1af3f9d8d816119562cc4))
+
+## [1.1.0](https://www.github.com/googleapis/google-auth-library-java/compare/v1.0.0...v1.1.0) (2021-08-17)
+
+
+### Features
+
+* downscoping with credential access boundaries ([#702](https://www.github.com/googleapis/google-auth-library-java/issues/702)) ([aa7ede1](https://www.github.com/googleapis/google-auth-library-java/commit/aa7ede1d1c688ba437798f4204820c0506d5d969))
+
+
+### Bug Fixes
+
+* add validation for the token URL and service account impersonation URL for Workload Identity Federation ([#717](https://www.github.com/googleapis/google-auth-library-java/issues/717)) ([23cb8ef](https://www.github.com/googleapis/google-auth-library-java/commit/23cb8ef778d012bbd452c1dfdac5f096d1af6c95))
+
+
+### Documentation
+
+* updates README for downscoping with CAB ([#716](https://www.github.com/googleapis/google-auth-library-java/issues/716)) ([68bceba](https://www.github.com/googleapis/google-auth-library-java/commit/68bceba21c05870f6eb616cc057ddf0521c581b8))
+
+## [1.0.0](https://www.github.com/googleapis/google-auth-library-java/compare/v0.27.0...v1.0.0) (2021-07-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* updating google-auth-library-java min Java version to 1.8
+
+### Features
+
+* GA release of google-auth-library-java (ver 1.0.0) ([#704](https://www.github.com/googleapis/google-auth-library-java/issues/704)) ([3d9874f](https://www.github.com/googleapis/google-auth-library-java/commit/3d9874f1c91dfa10d6f72d41e922b3f1ec654943))
+* updating google-auth-library-java min Java version to 1.8 ([3d9874f](https://www.github.com/googleapis/google-auth-library-java/commit/3d9874f1c91dfa10d6f72d41e922b3f1ec654943))
+
+
+### Bug Fixes
+
+* Add shopt -s nullglob to dependencies script ([#693](https://www.github.com/googleapis/google-auth-library-java/issues/693)) ([c5aa708](https://www.github.com/googleapis/google-auth-library-java/commit/c5aa7084d9ca817a53cf6bac14d442adeeaeb310))
+* Update dependencies.sh to not break on mac ([c5aa708](https://www.github.com/googleapis/google-auth-library-java/commit/c5aa7084d9ca817a53cf6bac14d442adeeaeb310))
+
+## [0.27.0](https://www.github.com/googleapis/google-auth-library-java/compare/v0.26.0...v0.27.0) (2021-07-14)
+
+
+### Features
+
+* add Id token support for UserCredentials ([#650](https://www.github.com/googleapis/google-auth-library-java/issues/650)) ([5a8f467](https://www.github.com/googleapis/google-auth-library-java/commit/5a8f4676630854c53aa708a9c8b960770067f858))
+* add impersonation credentials to ADC  ([#613](https://www.github.com/googleapis/google-auth-library-java/issues/613)) ([b9823f7](https://www.github.com/googleapis/google-auth-library-java/commit/b9823f70d7f3f7461b7de40bee06f5e7ba0e797c))
+* Adding functional tests for Service Account  ([#685](https://www.github.com/googleapis/google-auth-library-java/issues/685)) ([dfe118c](https://www.github.com/googleapis/google-auth-library-java/commit/dfe118c261aadf137a3cf47a7acb9892c7a6db4d))
+* allow scopes for self signed jwt ([#689](https://www.github.com/googleapis/google-auth-library-java/issues/689)) ([f4980c7](https://www.github.com/googleapis/google-auth-library-java/commit/f4980c77566bbd5ef4c532acb199d7d484dbcd01))
+
 ## [0.26.0](https://www.github.com/googleapis/google-auth-library-java/compare/v0.25.5...v0.26.0) (2021-05-20)
 
 
