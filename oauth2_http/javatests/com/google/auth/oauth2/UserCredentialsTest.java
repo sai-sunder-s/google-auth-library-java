@@ -40,11 +40,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpResponse;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.util.Clock;
 import com.google.auth.RequestMetadataCallback;
 import com.google.auth.TestUtils;
 import com.google.auth.http.AuthHttpConstants;
+import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentialsTest.MockHttpTransportFactory;
 import com.google.auth.oauth2.GoogleCredentialsTest.MockTokenServerTransportFactory;
 import com.google.common.collect.ImmutableList;
@@ -704,6 +710,34 @@ class UserCredentialsTest extends BaseSerializationTest {
     assertTrue(success.get(), "Should have run onSuccess() callback");
   }
 
+  // makeGetRequest makes a GET request to the specified Cloud Run or
+  // Cloud Functions endpoint, serviceUrl (must be a complete URL), by
+  // authenticating with an Id token retrieved from Application Default Credentials.
+  public static HttpResponse makeGetRequest(String serviceUrl) throws IOException {
+    GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
+    if (!(credentials instanceof IdTokenProvider)) {
+      throw new IllegalArgumentException("Credentials are not an instance of IdTokenProvider.");
+    }
+    IdTokenCredentials tokenCredential =
+        IdTokenCredentials.newBuilder()
+            .setIdTokenProvider((IdTokenProvider) credentials)
+            .setTargetAudience(serviceUrl)
+            .build();
+
+    GenericUrl genericUrl = new GenericUrl(serviceUrl);
+    HttpCredentialsAdapter adapter = new HttpCredentialsAdapter(tokenCredential);
+    HttpTransport transport = new NetHttpTransport();
+    HttpRequest request = transport.createRequestFactory(adapter).buildGetRequest(genericUrl);
+    return request.execute();
+  }
+
+  @Test
+  void IdTokenCloudRun() throws IOException {
+    HttpResponse response = makeGetRequest("https://metadata-test-java-dl4nrlcnqa-ue.a.run.app");
+
+    assertEquals(200, response.getStatusCode());
+  }
+
   @Test
   void IdTokenCredentials_WithUserEmailScope_success() throws IOException {
     MockTokenServerTransportFactory transportFactory = new MockTokenServerTransportFactory();
@@ -752,55 +786,6 @@ class UserCredentialsTest extends BaseSerializationTest {
 
     IOException exception = assertThrows(IOException.class, tokenCredential::refresh);
     assertTrue(exception.getMessage().equals(expectedMessageContent));
-  }
-
-  @Test
-  public void IdTokenCredentials_WithUserEmailScope_success() throws IOException {
-    MockTokenServerTransportFactory transportFactory = new MockTokenServerTransportFactory();
-    String refreshToken = MockTokenServerTransport.REFRESH_TOKEN_WITH_USER_SCOPE;
-
-    transportFactory.transport.addClient(CLIENT_ID, CLIENT_SECRET);
-    transportFactory.transport.addRefreshToken(refreshToken, ACCESS_TOKEN);
-    InputStream userStream = writeUserStream(CLIENT_ID, CLIENT_SECRET, refreshToken, QUOTA_PROJECT);
-
-    UserCredentials credentials = UserCredentials.fromStream(userStream, transportFactory);
-    credentials.refresh();
-
-    assertEquals(ACCESS_TOKEN, credentials.getAccessToken().getTokenValue());
-
-    IdTokenCredentials tokenCredential =
-        IdTokenCredentials.newBuilder().setIdTokenProvider(credentials).build();
-
-    // UserCredential returns access token until refresh,
-    // IDTokenCredential does refresh during instantiation
-    assertEquals(DEFAULT_ID_TOKEN, tokenCredential.getAccessToken().getTokenValue());
-    assertEquals(DEFAULT_ID_TOKEN, tokenCredential.getIdToken().getTokenValue());
-  }
-
-  @Test
-  public void IdTokenCredentials_NoUserEmailScope_throws() throws IOException {
-    MockTokenServerTransportFactory transportFactory = new MockTokenServerTransportFactory();
-    transportFactory.transport.addClient(CLIENT_ID, CLIENT_SECRET);
-    transportFactory.transport.addRefreshToken(REFRESH_TOKEN, ACCESS_TOKEN);
-    InputStream userStream =
-        writeUserStream(CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, QUOTA_PROJECT);
-
-    UserCredentials credentials = UserCredentials.fromStream(userStream, transportFactory);
-
-    IdTokenCredentials tokenCredential =
-        IdTokenCredentials.newBuilder().setIdTokenProvider(credentials).build();
-
-    String expectedMessageContent =
-        "UserCredentials can obtain an id token only when authenticated through"
-            + " gcloud running 'gcloud auth login --update-adc' or 'gcloud auth application-default"
-            + " login'. The latter form would not work for Cloud Run, but would still generate an"
-            + " id token.";
-
-    try {
-      tokenCredential.refresh();
-    } catch (IOException expected) {
-      assertTrue(expected.getMessage().equals(expectedMessageContent));
-    }
   }
 
   static GenericJson writeUserJson(
